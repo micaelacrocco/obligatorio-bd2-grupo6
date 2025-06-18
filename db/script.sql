@@ -13,7 +13,7 @@ CREATE TABLE CIUDADANOS (
 
 -- Tabla de votos por persona
 CREATE TABLE VOTOS_PERSONAS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     fecha DATE,
     observado BOOLEAN,
     tipo_voto VARCHAR(50),
@@ -23,7 +23,7 @@ CREATE TABLE VOTOS_PERSONAS (
 
 -- Partidos y sus listas
 CREATE TABLE PARTIDOS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100)
 );
 
@@ -35,7 +35,7 @@ CREATE TABLE LISTAS (
 
 -- Votos emitidos a listas
 CREATE TABLE VOTOS_LISTAS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     fecha DATE,
     numero_lista INT,
     FOREIGN KEY (numero_lista) REFERENCES LISTAS(numero)
@@ -66,12 +66,12 @@ CREATE TABLE LIDER (
 
 -- Departamentos y comisarías
 CREATE TABLE DEPARTAMENTOS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100)
 );
 
 CREATE TABLE COMISARIAS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     numero INT,
     direccion VARCHAR(200),
     id_departamento INT,
@@ -80,7 +80,7 @@ CREATE TABLE COMISARIAS (
 
 -- Zonas y establecimientos
 CREATE TABLE ZONAS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     direccion VARCHAR(200),
     id_departamento INT,
@@ -88,7 +88,7 @@ CREATE TABLE ZONAS (
 );
 
 CREATE TABLE ESTABLECIMIENTOS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     tipo VARCHAR(50),
     direccion VARCHAR(200),
@@ -109,7 +109,7 @@ CREATE TABLE AGENTES_POLICIALES (
 
 -- Circuitos y mesas de votación
 CREATE TABLE CIRCUITOS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     pueblo_ciudad_paraje VARCHAR(100),
     accesible BOOLEAN,
     inicio_credencial INT,
@@ -119,7 +119,7 @@ CREATE TABLE CIRCUITOS (
 );
 
 CREATE TABLE MESAS (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     id_circuito INT,
     FOREIGN KEY (id_circuito) REFERENCES CIRCUITOS(id)
 );
