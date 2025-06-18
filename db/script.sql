@@ -1,136 +1,151 @@
--- Crear y seleccionar la base de datos
-CREATE DATABASE IF NOT EXISTS elecciones;
-USE elecciones;
+-- Create and select the database
+CREATE DATABASE IF NOT EXISTS elections;
+USE elections;
 
--- Tabla base de ciudadanos
-CREATE TABLE CIUDADANOS (
-    ci INT PRIMARY KEY,
-    nombre VARCHAR(100),
-    apellido VARCHAR(100),
-    fecha_nacimiento DATE,
-    credencial VARCHAR(50)
+-- Citizens table
+CREATE TABLE CITIZENS
+(
+    id         INT PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name  VARCHAR(100),
+    birth_date DATE,
+    credential VARCHAR(50)
 );
 
--- Tabla de votos por persona
-CREATE TABLE VOTOS_PERSONAS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATE,
-    observado BOOLEAN,
-    tipo_voto VARCHAR(50),
-    ci_ciudadano INT,
-    FOREIGN KEY (ci_ciudadano) REFERENCES CIUDADANOS(ci)
+-- Votes by person
+CREATE TABLE PERSON_VOTES
+(
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    vote_date   DATE,
+    is_observed BOOLEAN,
+    vote_type   VARCHAR(50),
+    citizen_id  INT,
+    FOREIGN KEY (citizen_id) REFERENCES CITIZENS (id)
 );
 
--- Partidos y sus listas
-CREATE TABLE PARTIDOS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100)
+-- Parties and their lists
+CREATE TABLE PARTIES
+(
+    id   INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100)
 );
 
-CREATE TABLE LISTAS (
-    numero INT PRIMARY KEY,
-    id_partido INT,
-    FOREIGN KEY (id_partido) REFERENCES PARTIDOS(id)
+CREATE TABLE PARTY_LISTS
+(
+    list_number INT PRIMARY KEY,
+    party_id    INT,
+    FOREIGN KEY (party_id) REFERENCES PARTIES (id)
 );
 
--- Votos emitidos a listas
-CREATE TABLE VOTOS_LISTAS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATE,
-    numero_lista INT,
-    FOREIGN KEY (numero_lista) REFERENCES LISTAS(numero)
+-- Votes cast to party lists
+CREATE TABLE LIST_VOTES
+(
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    vote_date   DATE,
+    list_number INT,
+    FOREIGN KEY (list_number) REFERENCES PARTY_LISTS (list_number)
 );
 
--- Ciudadanos que integran listas
-CREATE TABLE INTEGRAN (
-    ci_ciudadano INT,
-    numero_lista INT,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    tipo_candidatura VARCHAR(50),
-    PRIMARY KEY (ci_ciudadano, numero_lista),
-    FOREIGN KEY (ci_ciudadano) REFERENCES CIUDADANOS(ci),
-    FOREIGN KEY (numero_lista) REFERENCES LISTAS(numero)
+-- Citizens who are candidates in a list
+CREATE TABLE CANDIDATES
+(
+    citizen_id     INT,
+    list_number    INT,
+    start_date     DATE,
+    end_date       DATE,
+    candidacy_type VARCHAR(50),
+    PRIMARY KEY (citizen_id, list_number),
+    FOREIGN KEY (citizen_id) REFERENCES CITIZENS (id),
+    FOREIGN KEY (list_number) REFERENCES PARTY_LISTS (list_number)
 );
 
--- Ciudadanos que son líderes de partidos
-CREATE TABLE LIDER (
-    ci_ciudadano INT,
-    id_partido INT,
-    anio_electoral INT,
-    cargo VARCHAR(100),
-    PRIMARY KEY (ci_ciudadano, id_partido, anio_electoral),
-    FOREIGN KEY (ci_ciudadano) REFERENCES CIUDADANOS(ci),
-    FOREIGN KEY (id_partido) REFERENCES PARTIDOS(id)
+-- Party leaders
+CREATE TABLE LEADERS
+(
+    citizen_id    INT,
+    party_id      INT,
+    election_year INT,
+    role          VARCHAR(100),
+    PRIMARY KEY (citizen_id, party_id, election_year),
+    FOREIGN KEY (citizen_id) REFERENCES CITIZENS (id),
+    FOREIGN KEY (party_id) REFERENCES PARTIES (id)
 );
 
--- Departamentos y comisarías
-CREATE TABLE DEPARTAMENTOS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100)
+-- Departments and police stations
+CREATE TABLE DEPARTMENTS
+(
+    id   INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100)
 );
 
-CREATE TABLE COMISARIAS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    numero INT,
-    direccion VARCHAR(200),
-    id_departamento INT,
-    FOREIGN KEY (id_departamento) REFERENCES DEPARTAMENTOS(id)
+CREATE TABLE POLICE_STATIONS
+(
+    id             INT PRIMARY KEY AUTO_INCREMENT,
+    station_number INT,
+    address        VARCHAR(200),
+    department_id  INT,
+    FOREIGN KEY (department_id) REFERENCES DEPARTMENTS (id)
 );
 
--- Zonas y establecimientos
-CREATE TABLE ZONAS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100),
-    direccion VARCHAR(200),
-    id_departamento INT,
-    FOREIGN KEY (id_departamento) REFERENCES DEPARTAMENTOS(id)
+-- Zones and polling places
+CREATE TABLE ZONES
+(
+    id            INT PRIMARY KEY AUTO_INCREMENT,
+    name          VARCHAR(100),
+    address       VARCHAR(200),
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES DEPARTMENTS (id)
 );
 
-CREATE TABLE ESTABLECIMIENTOS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100),
-    tipo VARCHAR(50),
-    direccion VARCHAR(200),
-    id_zona INT,
-    FOREIGN KEY (id_zona) REFERENCES ZONAS(id)
+CREATE TABLE POLLING_PLACES
+(
+    id      INT PRIMARY KEY AUTO_INCREMENT,
+    name    VARCHAR(100),
+    type    VARCHAR(50),
+    address VARCHAR(200),
+    zone_id INT,
+    FOREIGN KEY (zone_id) REFERENCES ZONES (id)
 );
 
--- Asignación de agentes a comisarías y establecimientos
-CREATE TABLE AGENTES_POLICIALES (
-    ci_ciudadano INT,
-    id_comisarias INT,
-    id_establecimiento INT,
-    PRIMARY KEY (ci_ciudadano, id_comisarias, id_establecimiento),
-    FOREIGN KEY (ci_ciudadano) REFERENCES CIUDADANOS(ci),
-    FOREIGN KEY (id_comisarias) REFERENCES COMISARIAS(id),
-    FOREIGN KEY (id_establecimiento) REFERENCES ESTABLECIMIENTOS(id)
+-- Police agents assigned to polling places
+CREATE TABLE POLICE_AGENTS
+(
+    citizen_id        INT,
+    police_station_id INT,
+    polling_place_id  INT,
+    PRIMARY KEY (citizen_id, police_station_id, polling_place_id),
+    FOREIGN KEY (citizen_id) REFERENCES CITIZENS (id),
+    FOREIGN KEY (police_station_id) REFERENCES POLICE_STATIONS (id),
+    FOREIGN KEY (polling_place_id) REFERENCES POLLING_PLACES (id)
 );
 
--- Circuitos y mesas de votación
-CREATE TABLE CIRCUITOS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    pueblo_ciudad_paraje VARCHAR(100),
-    accesible BOOLEAN,
-    inicio_credencial INT,
-    fin_credencial INT,
-    id_establecimiento INT,
-    FOREIGN KEY (id_establecimiento) REFERENCES ESTABLECIMIENTOS(id)
+-- Circuits and polling tables
+CREATE TABLE CIRCUITS
+(
+    id               INT PRIMARY KEY AUTO_INCREMENT,
+    location         VARCHAR(100),
+    is_accessible    BOOLEAN,
+    credential_start INT,
+    credential_end   INT,
+    polling_place_id INT,
+    FOREIGN KEY (polling_place_id) REFERENCES POLLING_PLACES (id)
 );
 
-CREATE TABLE MESAS (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    id_circuito INT,
-    FOREIGN KEY (id_circuito) REFERENCES CIRCUITOS(id)
+CREATE TABLE TABLES
+(
+    id         INT PRIMARY KEY AUTO_INCREMENT,
+    circuit_id INT,
+    FOREIGN KEY (circuit_id) REFERENCES CIRCUITS (id)
 );
 
--- Ciudadanos que conforman mesas
-CREATE TABLE CONFORMAN (
-    id_mesa INT,
-    ci_ciudadano INT,
-    fecha_integracion DATE,
-    trabajo VARCHAR(100),
-    PRIMARY KEY (id_mesa, ci_ciudadano),
-    FOREIGN KEY (id_mesa) REFERENCES MESAS(id),
-    FOREIGN KEY (ci_ciudadano) REFERENCES CIUDADANOS(ci)
+-- Members assigned to polling tables
+CREATE TABLE TABLE_MEMBERS
+(
+    table_id         INT,
+    citizen_id       INT,
+    integration_date DATE,
+    duty             VARCHAR(100),
+    PRIMARY KEY (table_id, citizen_id),
+    FOREIGN KEY (table_id) REFERENCES TABLES (id),
+    FOREIGN KEY (citizen_id) REFERENCES CITIZENS (id)
 );
