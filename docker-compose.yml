@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: eleccionesucu_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: elecciones
+    ports:
+      - "3307:3306"  # Cambiado para evitar conflicto con otro MySQL en 3306
+    volumes:
+      - ./db/script.sql:/docker-entrypoint-initdb.d/script.sql:ro
