@@ -21,5 +21,6 @@ func main() {
 	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
 
 	r.GET("/circuits/all", circuitsHandler.GetAll)
+	r.GET("/circuits/:id", circuitsHandler.GetById)
 	r.Run("localhost:8080")
 }

@@ -33,3 +33,21 @@ func (c *circuitsUseCase) GetAll() ([]dtos.CircuitDto, error) {
 	}
 	return circuitsDto, nil
 }
+
+func (c *circuitsUseCase) GetById(id int) (*dtos.CircuitDto, error) {
+	circuit, err := c.r.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	circuitDto := dtos.CircuitDto{
+		ID:              circuit.ID,
+		Location:        circuit.Location,
+		Accessible:      circuit.Accessible,
+		CredentialStart: circuit.CredentialStart,
+		CredentialEnd:   circuit.CredentialEnd,
+		PollingPlaceId:  circuit.PollingPlaceId,
+	}
+	return &circuitDto, nil
+}
