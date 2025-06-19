@@ -25,7 +25,7 @@ func (r *circuitMySQLRepo) GetAll() ([]models.Circuit, error) {
 
 	for rows.Next() {
 		var c models.Circuit
-		if err := rows.Scan(&c.ID, &c.Location, &c.Accesible, &c.CredentialStart, &c.CredentialEnd, &c.PollingPlaceId); err != nil {
+		if err := rows.Scan(&c.ID, &c.Location, &c.Accessible, &c.CredentialStart, &c.CredentialEnd, &c.PollingPlaceId); err != nil {
 			return nil, err
 		}
 

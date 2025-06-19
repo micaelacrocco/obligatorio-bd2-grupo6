@@ -25,7 +25,7 @@ func (c *circuitsUseCase) GetAll() ([]dtos.CircuitDto, error) {
 		circuitsDto = append(circuitsDto, dtos.CircuitDto{
 			ID:              c.ID,
 			Location:        c.Location,
-			Accesible:       c.Accesible,
+			Accessible:      c.Accessible,
 			CredentialStart: c.CredentialStart,
 			CredentialEnd:   c.CredentialEnd,
 			PollingPlaceId:  c.PollingPlaceId,
