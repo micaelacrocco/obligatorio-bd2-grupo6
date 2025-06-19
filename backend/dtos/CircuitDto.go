@@ -3,7 +3,7 @@ package dtos
 type CircuitDto struct {
 	ID              int
 	Location        string
-	Accesible       bool
+	Accessible      bool
 	CredentialStart int
 	CredentialEnd   int
 	PollingPlaceId  int

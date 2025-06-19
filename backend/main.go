@@ -20,6 +20,6 @@ func main() {
 	circuitsUseCase := usecases.NewCircuitsUseCase(circuitsRepo)
 	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
 
-	r.GET("circuits/all", circuitsHandler.GetAll)
+	r.GET("/circuits/all", circuitsHandler.GetAll)
 	r.Run("localhost:8080")
 }
