@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"EleccionesUcu/domains/interfaces"
+	"EleccionesUcu/dtos"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -39,5 +40,21 @@ func (h *CircuitsHandler) GetById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, circuit)
+	return
+}
+
+func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
+	var circuit dtos.CircuitDto
+
+	if err := c.ShouldBindJSON(&circuit); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+		return
+	}
+	circuitResponse, err := h.u.AddCircuit(circuit)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "There is already a circuit with this id"})
+		return
+	}
+	c.JSON(http.StatusOK, circuitResponse)
 	return
 }

@@ -22,5 +22,6 @@ func main() {
 
 	r.GET("/circuits/all", circuitsHandler.GetAll)
 	r.GET("/circuits/:id", circuitsHandler.GetById)
+	r.POST("/circuits", circuitsHandler.AddCircuit)
 	r.Run("localhost:8080")
 }
