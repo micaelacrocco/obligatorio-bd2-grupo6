@@ -3,6 +3,7 @@ package repositories
 import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/models"
+	"EleccionesUcu/utils"
 	"database/sql"
 	"errors"
 )
@@ -53,8 +54,10 @@ func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, 
 	query := "INSERT INTO CIRCUITS(id, location, is_accessible, credential_start, credential_end, polling_place_id) VALUES(?, ?, ?, ?, ?, ?)"
 	_, err := r.db.Exec(query, circuit.ID, circuit.Location, circuit.Accessible, circuit.CredentialStart, circuit.CredentialEnd, circuit.PollingPlaceId)
 
+	err = utils.ForeignKeyNotFoundError(err)
 	if err != nil {
 		return nil, err
 	}
+
 	return &circuit, nil
 }

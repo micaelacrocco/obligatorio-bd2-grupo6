@@ -3,6 +3,8 @@ package handlers
 import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
+	"EleccionesUcu/utils"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -51,10 +53,14 @@ func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
 		return
 	}
 	circuitResponse, err := h.u.AddCircuit(circuit)
-	if err != nil {
+	if errors.Is(err, utils.ErrForeignKeyNotFound) {
+		c.JSON(http.StatusBadGateway, gin.H{"error": "not found FK"})
+		return
+	} else if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "There is already a circuit with this id"})
 		return
 	}
+
 	c.JSON(http.StatusOK, circuitResponse)
 	return
 }
