@@ -3,6 +3,7 @@ package usecases
 import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
+	"EleccionesUcu/models"
 )
 
 type circuitsUseCase struct {
@@ -48,6 +49,22 @@ func (c *circuitsUseCase) GetById(id int) (*dtos.CircuitDto, error) {
 		CredentialStart: circuit.CredentialStart,
 		CredentialEnd:   circuit.CredentialEnd,
 		PollingPlaceId:  circuit.PollingPlaceId,
+	}
+	return &circuitDto, nil
+}
+func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto, error) {
+	circuitResult, err := c.r.AddCircuit(models.Circuit(circuit))
+	if err != nil {
+		return nil, err
+	}
+
+	circuitDto := dtos.CircuitDto{
+		ID:              circuitResult.ID,
+		Location:        circuitResult.Location,
+		Accessible:      circuitResult.Accessible,
+		CredentialStart: circuitResult.CredentialStart,
+		CredentialEnd:   circuitResult.CredentialEnd,
+		PollingPlaceId:  circuitResult.PollingPlaceId,
 	}
 	return &circuitDto, nil
 }
