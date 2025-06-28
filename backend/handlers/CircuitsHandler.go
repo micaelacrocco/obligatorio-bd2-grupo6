@@ -4,6 +4,7 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type CircuitsHandler struct {
@@ -22,5 +23,21 @@ func (h *CircuitsHandler) GetAll(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, circuits)
+	return
+}
+
+func (h *CircuitsHandler) GetById(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "the id must be an integer"})
+		return
+	}
+	circuit, err := h.u.GetById(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "There are no circuits with this id"})
+		return
+	}
+	c.JSON(http.StatusOK, circuit)
 	return
 }
