@@ -8,6 +8,8 @@ const DbUserKey = "DB_USER"
 const DbPasswordKey = "DB_PASSWORD"
 const DbNameKey = "DB_NAME"
 
+var JWT_SECRET = "mi-clave"
+
 func GetDSN() string {
 	dbHost := os.Getenv(DbHostKey)
 	dbPort := os.Getenv(DbPortKey)
