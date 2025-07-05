@@ -12,6 +12,15 @@ CREATE TABLE CITIZENS
     credential VARCHAR(50)
 );
 
+-- Tabla de usuarios
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    citizen_id INT UNIQUE REFERENCES citizens(id) ON DELETE CASCADE,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    user_type VARCHAR(50) NOT NULL -- "admin" o "user"
+);
+
 -- Votes by person
 CREATE TABLE PERSON_VOTES
 (
