@@ -5,23 +5,50 @@ import (
 	"EleccionesUcu/domains/repositories"
 	"EleccionesUcu/domains/usecases"
 	"EleccionesUcu/handlers"
+	"EleccionesUcu/middlewares"
 	"github.com/gin-gonic/gin"
 )
-
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
 
 func main() {
 	r := gin.Default()
 	database := db.ConnectDb()
 	defer database.Close()
 
+	// Dependency injection
+	citizenRepo := repositories.NewCitizenRepository(database)
+	citizenUseCase := usecases.NewCitizenUseCase(citizenRepo)
+	citizenHandler := handlers.NewCitizenHandler(citizenUseCase)
+
+	// userRepo := repositories.NewUserRepository(database)
+	// authUseCase := usecases.NewAuthUseCase(userRepo, citizenRepo)
+	// authHandler := handlers.NewAuthHandler(authUseCase)
+
 	circuitsRepo := repositories.NewCircuitRepository(database)
 	circuitsUseCase := usecases.NewCircuitsUseCase(circuitsRepo)
 	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
 
-	r.GET("/circuits/all", circuitsHandler.GetAll)
-	r.GET("/circuits/:id", circuitsHandler.GetById)
-	r.POST("/circuits", circuitsHandler.AddCircuit)
+	// Public routes
+	// r.POST("/login", authHandler.Login)
+	// r.POST("/register", authHandler.Register)
+
+	// Protected routes
+	protected := r.Group("/")
+	protected.Use(middlewares.AuthMiddleware())
+
+	protected.GET("/circuits", circuitsHandler.GetAll)
+
+	// Admin-only routes
+	protectedAdmin := protected.Group("/admin")
+	protectedAdmin.Use(middlewares.RequireRoles("admin"))
+
+	protectedAdmin.GET("/citizens", citizenHandler.GetAll)
+	protectedAdmin.GET("/citizens/:id", citizenHandler.GetById)
+	protectedAdmin.POST("/citizens", citizenHandler.AddCitizen)
+	protectedAdmin.PUT("/citizens/:id", citizenHandler.Update)
+	protectedAdmin.DELETE("/citizens/:id", citizenHandler.Delete)
+
+	protectedAdmin.GET("/circuits/:id", circuitsHandler.GetById)
+	protectedAdmin.POST("/circuits", circuitsHandler.AddCircuit)
+
 	r.Run("localhost:8080")
 }
