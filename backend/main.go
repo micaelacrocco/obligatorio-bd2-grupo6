@@ -51,6 +51,18 @@ func main() {
 	policeAgentUseCase := usecases.NewPoliceAgentUseCase(policeAgentRepository)
 	policeAgentHandler := handlers.NewPoliceAgentHandler(policeAgentUseCase)
 
+	policeStationRepository := repositories.NewPoliceStationRepository(database)
+	policeStationUseCase := usecases.NewPoliceStationUseCase(policeStationRepository)
+	policeStationHandler := handlers.NewPoliceStationHandler(policeStationUseCase)
+
+	tableRepository := repositories.NewTableRepository(database)
+	tableUseCase := usecases.NewTableUseCase(tableRepository)
+	tableHandler := handlers.NewTableHandler(tableUseCase)
+
+	candidateRepository := repositories.NewCandidateRepository(database)
+	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
+	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
+  
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -91,6 +103,20 @@ func main() {
 	r.PUT("/police-agents", policeAgentHandler.Update)
 	r.DELETE("/police-agents/:id", policeAgentHandler.Delete)
 
+	r.GET("/police-stations", policeStationHandler.GetAll)
+	r.POST("/police-stations", policeStationHandler.Add)
+	r.PUT("/police-stations", policeStationHandler.Update)
+	r.DELETE("/police-stations/:id", policeStationHandler.Delete)
+
+	r.GET("/tables", tableHandler.GetAll)
+	r.GET("/tables/:id", tableHandler.GetById)
+	r.POST("/tables", tableHandler.Add)
+	r.DELETE("/tables/:id", tableHandler.Delete)
+
+	r.GET("/candidates", candidateHandler.GetAll)
+	r.GET("/candidates/:citizen_id", candidateHandler.GetByCitizenID)
+	r.POST("/candidates", candidateHandler.Add)
+	r.DELETE("/candidates/:citizen_id/:list_number", candidateHandler.Delete)
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))

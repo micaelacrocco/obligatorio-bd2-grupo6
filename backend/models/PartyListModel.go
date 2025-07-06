@@ -1,6 +1,6 @@
 package models
 
-type PartyListModel struct {
+type PartyList struct {
 	ListNumber int
 	PartyID    int
 }
