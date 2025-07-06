@@ -62,7 +62,11 @@ func main() {
 	candidateRepository := repositories.NewCandidateRepository(database)
 	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
 	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
-  
+
+	pollingPlaceRepository := repositories.NewPollingPlaceRepository(database)
+	pollingPlaceUseCase := usecases.NewPollingPlaceUseCase(pollingPlaceRepository)
+	pollingPlaceHandler := handlers.NewPollingPlaceHandler(pollingPlaceUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -117,6 +121,12 @@ func main() {
 	r.GET("/candidates/:citizen_id", candidateHandler.GetByCitizenID)
 	r.POST("/candidates", candidateHandler.Add)
 	r.DELETE("/candidates/:citizen_id/:list_number", candidateHandler.Delete)
+
+	r.GET("/polling-places", pollingPlaceHandler.GetAll)
+	r.GET("/polling-places/:id", pollingPlaceHandler.GetByID)
+	r.POST("/polling-places", pollingPlaceHandler.Add)
+	r.DELETE("/polling-places/:id", pollingPlaceHandler.Delete)
+
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
