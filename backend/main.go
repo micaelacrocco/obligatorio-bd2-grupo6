@@ -51,6 +51,10 @@ func main() {
 	policeAgentUseCase := usecases.NewPoliceAgentUseCase(policeAgentRepository)
 	policeAgentHandler := handlers.NewPoliceAgentHandler(policeAgentUseCase)
 
+	policeStationRepository := repositories.NewPoliceStationRepository(database)
+	policeStationUseCase := usecases.NewPoliceStationUseCase(policeStationRepository)
+	policeStationHandler := handlers.NewPoliceStationHandler(policeStationUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -90,6 +94,11 @@ func main() {
 	r.POST("/police-agents", policeAgentHandler.Add)
 	r.PUT("/police-agents", policeAgentHandler.Update)
 	r.DELETE("/police-agents/:id", policeAgentHandler.Delete)
+
+	r.GET("/police-stations", policeStationHandler.GetAll)
+	r.POST("/police-stations", policeStationHandler.Add)
+	r.PUT("/police-stations", policeStationHandler.Update)
+	r.DELETE("/police-stations/:id", policeStationHandler.Delete)
 
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
