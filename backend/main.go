@@ -75,7 +75,7 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware())
 
-	protected.GET("/circuits", circuitsHandler.GetAll)
+	r.GET("/circuits", circuitsHandler.GetAll)
 
 	r.GET("/political-parties", politicalPartyHandler.GetAll)
 	r.POST("/political-parties", politicalPartyHandler.Add)
@@ -127,6 +127,9 @@ func main() {
 	r.POST("/polling-places", pollingPlaceHandler.Add)
 	r.DELETE("/polling-places/:id", pollingPlaceHandler.Delete)
 
+	r.PUT("/circuits", circuitsHandler.Update)
+	r.DELETE("/circuits/:id", circuitsHandler.Delete)
+
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
@@ -138,7 +141,7 @@ func main() {
 	protectedAdmin.DELETE("/citizens/:id", citizenHandler.Delete)
 
 	protectedAdmin.GET("/circuits/:id", circuitsHandler.GetById)
-	protectedAdmin.POST("/circuits", circuitsHandler.AddCircuit)
+	r.POST("/circuits", circuitsHandler.AddCircuit)
 
 	r.Run("localhost:8080")
 }

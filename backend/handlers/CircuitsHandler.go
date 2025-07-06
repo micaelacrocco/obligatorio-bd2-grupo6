@@ -6,6 +6,7 @@ import (
 	"EleccionesUcu/utils"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -62,4 +63,34 @@ func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
 
 	c.JSON(http.StatusOK, circuitResponse)
 	return
+}
+
+func (h *CircuitsHandler) Update(c *gin.Context) {
+	var dto dtos.CircuitDto
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+		return
+	}
+	updated, err := h.u.Update(dto)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "could not update"})
+		return
+	}
+	c.JSON(http.StatusOK, updated)
+}
+
+func (h *CircuitsHandler) Delete(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	err = h.u.Delete(id)
+	if err != nil {
+		log.Printf("error: %v", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	c.Status(http.StatusNoContent)
 }

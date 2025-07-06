@@ -68,3 +68,16 @@ func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto,
 	}
 	return &circuitDto, nil
 }
+
+func (c *circuitsUseCase) Update(dto dtos.CircuitDto) (*dtos.CircuitDto, error) {
+	updated, err := c.r.Update(models.Circuit(dto))
+	if err != nil {
+		return nil, err
+	}
+	result := dtos.CircuitDto(*updated)
+	return &result, nil
+}
+
+func (c *circuitsUseCase) Delete(id int) error {
+	return c.r.Delete(id)
+}

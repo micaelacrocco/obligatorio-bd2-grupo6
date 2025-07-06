@@ -61,3 +61,17 @@ func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, 
 
 	return &circuit, nil
 }
+
+func (r *circuitMySQLRepo) Update(circuit models.Circuit) (*models.Circuit, error) {
+	query := "UPDATE CIRCUITS SET location = ?, is_accessible = ?, credential_start = ?, credential_end = ?, polling_place_id = ? WHERE id = ?"
+	_, err := r.db.Exec(query, circuit.Location, circuit.Accessible, circuit.CredentialStart, circuit.CredentialEnd, circuit.PollingPlaceId, circuit.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &circuit, nil
+}
+
+func (r *circuitMySQLRepo) Delete(id int) error {
+	_, err := r.db.Exec("DELETE FROM CIRCUITS WHERE id = ?", id)
+	return err
+}
