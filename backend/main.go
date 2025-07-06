@@ -62,7 +62,7 @@ func main() {
 	candidateRepository := repositories.NewCandidateRepository(database)
 	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
 	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
-
+  
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
