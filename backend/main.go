@@ -27,6 +27,10 @@ func main() {
 	circuitsUseCase := usecases.NewCircuitsUseCase(circuitsRepo)
 	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
 
+	politicalPartyRepo := repositories.NewPoliticalPartyRepository(database)
+	politicalPartyUseCase := usecases.NewPoliticalPartyUseCase(politicalPartyRepo)
+	politicalPartyHandler := handlers.NewPoliticalPartyHandler(politicalPartyUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -37,12 +41,16 @@ func main() {
 
 	protected.GET("/circuits", circuitsHandler.GetAll)
 
+	r.GET("/political-parties", politicalPartyHandler.GetAll)
+	r.POST("/political-parties", politicalPartyHandler.Add)
+	r.PUT("/political-parties", politicalPartyHandler.Update)
+	r.DELETE("/political-parties/:id", politicalPartyHandler.Delete)
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
 
 	protectedAdmin.GET("/citizens", citizenHandler.GetAll)
-	protectedAdmin.GET("/citizens/:id", citizenHandler.GetById)
+	protectedAdmin.GET("/citizens/:ci", citizenHandler.GetById)
 	protectedAdmin.POST("/citizens", citizenHandler.AddCitizen)
 	protectedAdmin.PUT("/citizens/:id", citizenHandler.Update)
 	protectedAdmin.DELETE("/citizens/:id", citizenHandler.Delete)
