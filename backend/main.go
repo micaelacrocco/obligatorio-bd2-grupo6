@@ -14,7 +14,6 @@ func main() {
 	database := db.ConnectDb()
 	defer database.Close()
 
-	// Dependency injection
 	citizenRepo := repositories.NewCitizenRepository(database)
 	citizenUseCase := usecases.NewCitizenUseCase(citizenRepo)
 	citizenHandler := handlers.NewCitizenHandler(citizenUseCase)
@@ -66,6 +65,10 @@ func main() {
 	pollingPlaceRepository := repositories.NewPollingPlaceRepository(database)
 	pollingPlaceUseCase := usecases.NewPollingPlaceUseCase(pollingPlaceRepository)
 	pollingPlaceHandler := handlers.NewPollingPlaceHandler(pollingPlaceUseCase)
+
+	tableMembersRepository := repositories.NewTableMemberRepository(database)
+	tableMembersUseCase := usecases.NewTableMemberUseCase(tableMembersRepository)
+	tableMemberHandler := handlers.NewTableMemberHandler(tableMembersUseCase)
 
 	// Public routes
 	// r.POST("/login", authHandler.Login)
@@ -129,6 +132,11 @@ func main() {
 
 	r.PUT("/circuits", circuitsHandler.Update)
 	r.DELETE("/circuits/:id", circuitsHandler.Delete)
+
+	r.GET("/table-members", tableMemberHandler.GetAll)
+	r.GET("/table-members/:citizen_id/:table_id", tableMemberHandler.GetCitizenIsTableMember)
+	r.POST("/table-members", tableMemberHandler.Add)
+	r.DELETE("/table-members/:citizen_id/:table_id", tableMemberHandler.Delete)
 
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
