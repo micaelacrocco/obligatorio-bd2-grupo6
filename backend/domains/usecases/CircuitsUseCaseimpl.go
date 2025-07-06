@@ -52,6 +52,33 @@ func (c *circuitsUseCase) GetById(id int) (*dtos.CircuitDto, error) {
 	}
 	return &circuitDto, nil
 }
+func (c *circuitsUseCase) GetVotesByParty(circuitID int) ([]dtos.PartyVoteDto, error) {
+	votes, err := c.r.GetVotesByParty(circuitID)
+	if err != nil {
+		return nil, err
+	}
+
+	totalVotes := 0
+	for _, v := range votes {
+		totalVotes += v.VoteCount
+	}
+
+	for i := range votes {
+		percentage := float64(votes[i].VoteCount) / float64(totalVotes) * 100
+		votes[i].VotePercentage = percentage
+	}
+
+	var voteDto []dtos.PartyVoteDto
+	for _, v := range votes {
+		voteDto = append(voteDto, dtos.PartyVoteDto{
+			PartyName:  v.PartyName,
+			Votes:      v.VoteCount,
+			Percentage: v.VotePercentage,
+		})
+	}
+	return voteDto, nil
+}
+
 func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto, error) {
 	circuitResult, err := c.r.AddCircuit(models.Circuit(circuit))
 	if err != nil {

@@ -132,6 +132,7 @@ func main() {
 
 	r.PUT("/circuits", circuitsHandler.Update)
 	r.DELETE("/circuits/:id", circuitsHandler.Delete)
+	r.GET("/circuits/:id/votes-by-party", circuitsHandler.GetVotesByParty)
 
 	r.GET("/table-members", tableMemberHandler.GetAll)
 	r.GET("/table-members/:citizen_id/:table_id", tableMemberHandler.GetCitizenIsTableMember)

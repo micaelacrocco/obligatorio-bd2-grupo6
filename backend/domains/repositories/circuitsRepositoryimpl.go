@@ -50,6 +50,33 @@ func (r *circuitMySQLRepo) GetById(id int) (*models.Circuit, error) {
 	return &c, nil
 }
 
+func (r *circuitMySQLRepo) GetVotesByParty(circuitID int) ([]models.PartyVote, error) {
+	query := `
+		SELECT p.name AS partido, COUNT(*) AS votos
+		FROM LIST_VOTES lv
+		JOIN PARTY_LISTS pl ON lv.list_number = pl.list_number
+		JOIN PARTIES p ON pl.party_id = p.id
+		WHERE lv.circuit_id = ?
+		GROUP BY p.name;
+	`
+
+	rows, err := r.db.Query(query, circuitID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []models.PartyVote
+	for rows.Next() {
+		var vote models.PartyVote
+		if err := rows.Scan(&vote.PartyName, &vote.VoteCount); err != nil {
+			return nil, err
+		}
+		results = append(results, vote)
+	}
+	return results, nil
+}
+
 func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, error) {
 	query := "INSERT INTO CIRCUITS(id, location, is_accessible, credential_start, credential_end, polling_place_id) VALUES(?, ?, ?, ?, ?, ?)"
 	_, err := r.db.Exec(query, circuit.ID, circuit.Location, circuit.Accessible, circuit.CredentialStart, circuit.CredentialEnd, circuit.PollingPlaceId)
