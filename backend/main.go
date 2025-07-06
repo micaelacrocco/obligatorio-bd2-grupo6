@@ -20,7 +20,7 @@ func main() {
 	citizenHandler := handlers.NewCitizenHandler(citizenUseCase)
 
 	// userRepo := repositories.NewUserRepository(database)
-	// authUseCase := usecases.NewAuthUseCase(userRepo, citizenRepo)
+	// authUseCase :∑= usecases.NewAuthUseCase(userRepo, citizenRepo)
 	// authHandler := handlers.NewAuthHandler(authUseCase)
 
 	circuitsRepo := repositories.NewCircuitRepository(database)
@@ -31,6 +31,13 @@ func main() {
 	politicalPartyUseCase := usecases.NewPoliticalPartyUseCase(politicalPartyRepo)
 	politicalPartyHandler := handlers.NewPoliticalPartyHandler(politicalPartyUseCase)
 
+	partyListRepository := repositories.NewPartyListRepository(database)
+	partyListUseCase := usecases.NewPartyListUseCase(partyListRepository)
+	partyListHandler := handlers.NewPartyListHandler(partyListUseCase)
+
+	listVoteRepository := repositories.NewListVoteRepository(database)
+	listVoteUseCase := usecases.NewListVoteUseCase(listVoteRepository)
+	listVoteHandler := handlers.NewListVoteHandler(listVoteUseCase)
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -45,6 +52,17 @@ func main() {
 	r.POST("/political-parties", politicalPartyHandler.Add)
 	r.PUT("/political-parties", politicalPartyHandler.Update)
 	r.DELETE("/political-parties/:id", politicalPartyHandler.Delete)
+
+	r.GET("/party-lists", partyListHandler.GetAll)
+	r.POST("/party-lists", partyListHandler.Add)
+	r.PUT("/party-lists", partyListHandler.Update)
+	r.DELETE("/party-lists/:list_number", partyListHandler.Delete)
+
+	r.GET("/list-votes", listVoteHandler.GetAll)
+	r.POST("/list-votes", listVoteHandler.Add)
+	r.PUT("/list-votes", listVoteHandler.Update)
+	r.DELETE("/list-votes/:id", listVoteHandler.Delete)
+
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
