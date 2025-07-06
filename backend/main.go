@@ -38,6 +38,11 @@ func main() {
 	listVoteRepository := repositories.NewListVoteRepository(database)
 	listVoteUseCase := usecases.NewListVoteUseCase(listVoteRepository)
 	listVoteHandler := handlers.NewListVoteHandler(listVoteUseCase)
+
+	departmentRepository := repositories.NewDepartmentRepository(database)
+	departmentUseCase := usecases.NewDepartmentUseCase(departmentRepository)
+	departmentHandler := handlers.NewDepartmentHandler(departmentUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -63,6 +68,9 @@ func main() {
 	r.PUT("/list-votes", listVoteHandler.Update)
 	r.DELETE("/list-votes/:id", listVoteHandler.Delete)
 
+	r.GET("/departments", departmentHandler.GetAll)
+	r.POST("/departments", departmentHandler.Add)
+	r.DELETE("/departments/:id", departmentHandler.Delete)
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
