@@ -4,7 +4,6 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -51,7 +50,6 @@ func (h *PoliceAgentHandler) Add(c *gin.Context) {
 	created, err := h.u.Add(dto)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "could not add agent"})
-		log.Printf("error %v", err)
 		return
 	}
 	c.JSON(http.StatusCreated, created)

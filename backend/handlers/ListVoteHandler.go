@@ -4,7 +4,6 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -21,7 +20,6 @@ func (h *ListVoteHandler) GetAll(c *gin.Context) {
 	votes, err := h.u.GetAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve list votes"})
-		log.Printf("error, %v", err)
 		return
 	}
 	c.JSON(http.StatusOK, votes)

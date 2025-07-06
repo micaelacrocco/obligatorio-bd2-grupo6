@@ -4,7 +4,6 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -64,7 +63,6 @@ func (h *ZoneHandler) Delete(c *gin.Context) {
 	}
 	err = h.u.Delete(id)
 	if err != nil {
-		log.Printf("error: %v", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "zone not found"})
 		return
 	}
