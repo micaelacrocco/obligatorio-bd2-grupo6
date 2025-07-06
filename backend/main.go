@@ -43,6 +43,14 @@ func main() {
 	departmentUseCase := usecases.NewDepartmentUseCase(departmentRepository)
 	departmentHandler := handlers.NewDepartmentHandler(departmentUseCase)
 
+	zoneRepository := repositories.NewZoneRepository(database)
+	zoneUseCase := usecases.NewZoneUseCase(zoneRepository)
+	zoneHandler := handlers.NewZoneHandler(zoneUseCase)
+
+	policeAgentRepository := repositories.NewPoliceAgentRepository(database)
+	policeAgentUseCase := usecases.NewPoliceAgentUseCase(policeAgentRepository)
+	policeAgentHandler := handlers.NewPoliceAgentHandler(policeAgentUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -71,6 +79,18 @@ func main() {
 	r.GET("/departments", departmentHandler.GetAll)
 	r.POST("/departments", departmentHandler.Add)
 	r.DELETE("/departments/:id", departmentHandler.Delete)
+
+	r.GET("/zones", zoneHandler.GetAll)
+	r.GET("/zones/:id", zoneHandler.GetById)
+	r.POST("/zones", zoneHandler.Add)
+	r.DELETE("/zones/:id", zoneHandler.Delete)
+
+	r.GET("/police-agents", policeAgentHandler.GetAll)
+	r.GET("/police-agents/:id", policeAgentHandler.GetByCitizenID)
+	r.POST("/police-agents", policeAgentHandler.Add)
+	r.PUT("/police-agents", policeAgentHandler.Update)
+	r.DELETE("/police-agents/:id", policeAgentHandler.Delete)
+
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
