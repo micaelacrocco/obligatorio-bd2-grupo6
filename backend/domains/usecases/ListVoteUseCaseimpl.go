@@ -33,7 +33,7 @@ func (u *listVoteUseCase) GetAll() ([]dtos.ListVoteDto, error) {
 
 func (u *listVoteUseCase) Add(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
 	date, _ := time.Parse("2006-01-02", dto.VoteDate)
-	model := models.ListVoteModel{
+	model := models.ListVote{
 		VoteDate:   date,
 		ListNumber: dto.ListNumber,
 	}
@@ -47,7 +47,7 @@ func (u *listVoteUseCase) Add(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
 
 func (u *listVoteUseCase) Update(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
 	date, _ := time.Parse("2006-01-02", dto.VoteDate)
-	model := models.ListVoteModel{
+	model := models.ListVote{
 		ID:         dto.ID,
 		VoteDate:   date,
 		ListNumber: dto.ListNumber,

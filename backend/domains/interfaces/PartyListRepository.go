@@ -3,8 +3,8 @@ package interfaces
 import "EleccionesUcu/models"
 
 type PartyListRepository interface {
-	GetAll() ([]models.PartyListModel, error)
-	Add(list models.PartyListModel) (*models.PartyListModel, error)
-	Update(list models.PartyListModel) (*models.PartyListModel, error)
+	GetAll() ([]models.PartyList, error)
+	Add(list models.PartyList) (*models.PartyList, error)
+	Update(list models.PartyList) (*models.PartyList, error)
 	Delete(listNumber int) error
 }
