@@ -8,4 +8,6 @@ type CircuitsRepository interface {
 	GetAll() ([]models.Circuit, error)
 	GetById(id int) (*models.Circuit, error)
 	AddCircuit(circuit models.Circuit) (*models.Circuit, error)
+	Update(c models.Circuit) (*models.Circuit, error)
+	Delete(id int) error
 }
