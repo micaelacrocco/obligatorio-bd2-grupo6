@@ -43,6 +43,10 @@ func main() {
 	departmentUseCase := usecases.NewDepartmentUseCase(departmentRepository)
 	departmentHandler := handlers.NewDepartmentHandler(departmentUseCase)
 
+	zoneRepository := repositories.NewZoneRepository(database)
+	zoneUseCase := usecases.NewZoneUseCase(zoneRepository)
+	zoneHandler := handlers.NewZoneHandler(zoneUseCase)
+
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -71,6 +75,12 @@ func main() {
 	r.GET("/departments", departmentHandler.GetAll)
 	r.POST("/departments", departmentHandler.Add)
 	r.DELETE("/departments/:id", departmentHandler.Delete)
+
+	r.GET("/zones", zoneHandler.GetAll)
+	r.GET("/zones/:id", zoneHandler.GetById)
+	r.POST("/zones", zoneHandler.Add)
+	r.DELETE("/zones/:id", zoneHandler.Delete)
+
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
