@@ -64,14 +64,19 @@ func (h *CandidateHandler) Add(c *gin.Context) {
 func (h *CandidateHandler) Delete(c *gin.Context) {
 	citizenID := c.Param("citizen_id")
 	listNumber := c.Param("list_number")
-	citizenIdInt, err := strconv.Atoi(citizenID)
-	listNumberInt, err := strconv.Atoi(listNumber)
+	citizenIdInt, errCitizenIdParse := strconv.Atoi(citizenID)
+	listNumberInt, errListNumberParse := strconv.Atoi(listNumber)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "the ids must be integers"})
+	if errCitizenIdParse != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The Citizen Id must be an integer"})
 		return
 	}
-	err = h.u.Delete(citizenIdInt, listNumberInt)
+
+	if errListNumberParse != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The List Number id must be an integer"})
+		return
+	}
+	err := h.u.Delete(citizenIdInt, listNumberInt)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "candidate not found"})
 		return
