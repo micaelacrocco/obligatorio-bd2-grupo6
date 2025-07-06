@@ -15,16 +15,16 @@ func NewPartyListRepository(db *sql.DB) interfaces.PartyListRepository {
 	return &partyListMySQLRepo{db: db}
 }
 
-func (r *partyListMySQLRepo) GetAll() ([]models.PartyListModel, error) {
+func (r *partyListMySQLRepo) GetAll() ([]models.PartyList, error) {
 	rows, err := r.db.Query("SELECT list_number, party_id FROM PARTY_LISTS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var lists []models.PartyListModel
+	var lists []models.PartyList
 	for rows.Next() {
-		var l models.PartyListModel
+		var l models.PartyList
 		if err := rows.Scan(&l.ListNumber, &l.PartyID); err != nil {
 			return nil, err
 		}
@@ -33,7 +33,7 @@ func (r *partyListMySQLRepo) GetAll() ([]models.PartyListModel, error) {
 	return lists, nil
 }
 
-func (r *partyListMySQLRepo) Add(list models.PartyListModel) (*models.PartyListModel, error) {
+func (r *partyListMySQLRepo) Add(list models.PartyList) (*models.PartyList, error) {
 	_, err := r.db.Exec("INSERT INTO PARTY_LISTS(list_number, party_id) VALUES (?, ?)", list.ListNumber, list.PartyID)
 	err = utils.ForeignKeyNotFoundError(err)
 	if err != nil {
@@ -42,7 +42,7 @@ func (r *partyListMySQLRepo) Add(list models.PartyListModel) (*models.PartyListM
 	return &list, nil
 }
 
-func (r *partyListMySQLRepo) Update(list models.PartyListModel) (*models.PartyListModel, error) {
+func (r *partyListMySQLRepo) Update(list models.PartyList) (*models.PartyList, error) {
 	result, err := r.db.Exec("UPDATE PARTY_LISTS SET party_id = ? WHERE list_number = ?", list.PartyID, list.ListNumber)
 	if err != nil {
 		return nil, err

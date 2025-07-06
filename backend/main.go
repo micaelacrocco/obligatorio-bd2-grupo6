@@ -54,10 +54,15 @@ func main() {
 	policeStationRepository := repositories.NewPoliceStationRepository(database)
 	policeStationUseCase := usecases.NewPoliceStationUseCase(policeStationRepository)
 	policeStationHandler := handlers.NewPoliceStationHandler(policeStationUseCase)
+
 	tableRepository := repositories.NewTableRepository(database)
 	tableUseCase := usecases.NewTableUseCase(tableRepository)
 	tableHandler := handlers.NewTableHandler(tableUseCase)
 
+	candidateRepository := repositories.NewCandidateRepository(database)
+	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
+	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
+  
 	// Public routes
 	// r.POST("/login", authHandler.Login)
 	// r.POST("/register", authHandler.Register)
@@ -108,6 +113,10 @@ func main() {
 	r.POST("/tables", tableHandler.Add)
 	r.DELETE("/tables/:id", tableHandler.Delete)
 
+	r.GET("/candidates", candidateHandler.GetAll)
+	r.GET("/candidates/:citizen_id", candidateHandler.GetByCitizenID)
+	r.POST("/candidates", candidateHandler.Add)
+	r.DELETE("/candidates/:citizen_id/:list_number", candidateHandler.Delete)
 	// Admin-only routes
 	protectedAdmin := protected.Group("/admin")
 	protectedAdmin.Use(middlewares.RequireRoles("admin"))
