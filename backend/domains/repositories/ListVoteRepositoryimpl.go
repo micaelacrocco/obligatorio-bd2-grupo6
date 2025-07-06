@@ -16,16 +16,16 @@ func NewListVoteRepository(db *sql.DB) interfaces.ListVoteRepository {
 	return &listVoteMySQLRepo{db: db}
 }
 
-func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
+func (r *listVoteMySQLRepo) GetAll() ([]models.ListVoteModel, error) {
 	rows, err := r.db.Query("SELECT id, vote_date, list_number FROM LIST_VOTES")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var votes []models.ListVote
+	var votes []models.ListVoteModel
 	for rows.Next() {
-		var v models.ListVote
+		var v models.ListVoteModel
 		var voteDateStr string
 
 		if err := rows.Scan(&v.ID, &voteDateStr, &v.ListNumber); err != nil {
@@ -38,7 +38,7 @@ func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
 	return votes, nil
 }
 
-func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) {
+func (r *listVoteMySQLRepo) Add(vote models.ListVoteModel) (*models.ListVoteModel, error) {
 	// Convert time.Time to string before insert
 	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
@@ -50,7 +50,7 @@ func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) 
 	return &vote, nil
 }
 
-func (r *listVoteMySQLRepo) Update(vote models.ListVote) (*models.ListVote, error) {
+func (r *listVoteMySQLRepo) Update(vote models.ListVoteModel) (*models.ListVoteModel, error) {
 	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
 	result, err := r.db.Exec("UPDATE LIST_VOTES SET vote_date = ?, list_number = ? WHERE id = ?", voteDateStr, vote.ListNumber, vote.ID)

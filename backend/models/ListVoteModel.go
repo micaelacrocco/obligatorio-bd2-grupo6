@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type ListVote struct {
+type ListVoteModel struct {
 	ID         int
 	VoteDate   time.Time
 	ListNumber int

@@ -30,7 +30,7 @@ func (u *partyListUseCase) GetAll() ([]dtos.PartyListDto, error) {
 }
 
 func (u *partyListUseCase) Add(dto dtos.PartyListDto) (*dtos.PartyListDto, error) {
-	list, err := u.r.Add(models.PartyList(dto))
+	list, err := u.r.Add(models.PartyListModel(dto))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (u *partyListUseCase) Add(dto dtos.PartyListDto) (*dtos.PartyListDto, error
 }
 
 func (u *partyListUseCase) Update(dto dtos.PartyListDto) (*dtos.PartyListDto, error) {
-	list, err := u.r.Update(models.PartyList(dto))
+	list, err := u.r.Update(models.PartyListModel(dto))
 	if err != nil {
 		return nil, err
 	}
