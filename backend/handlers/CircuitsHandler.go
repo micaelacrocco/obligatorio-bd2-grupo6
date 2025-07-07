@@ -89,6 +89,7 @@ func (h *CircuitsHandler) GetVotes(c *gin.Context) {
 	c.JSON(http.StatusOK, votes)
 }
 
+
 func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
 	var circuit dtos.CircuitDto
 

@@ -134,6 +134,7 @@ func main() {
 	r.DELETE("/circuits/:id", circuitsHandler.Delete)
 	r.GET("/circuits/:id/votes-by-party", circuitsHandler.GetVotesByParty)
 	r.GET("/circuits/:id/results", circuitsHandler.GetVotes)
+
 	r.GET("/table-members", tableMemberHandler.GetAll)
 	r.GET("/table-members/:citizen_id/:table_id", tableMemberHandler.GetCitizenIsTableMember)
 	r.POST("/table-members", tableMemberHandler.Add)
