@@ -49,6 +49,19 @@ func (r *circuitMySQLRepo) GetById(id int) (*models.Circuit, error) {
 	}
 	return &c, nil
 }
+func (r *circuitMySQLRepo) GetVotesPersonById(citizenID int) (*models.PersonVoteModel, error) {
+	query := "SELECT * FROM PERSON_VOTES WHERE citizen_id = ?"
+	row := r.db.QueryRow(query, citizenID)
+
+	var c models.PersonVoteModel
+
+	err := row.Scan(&c.ID, &c.VoteDate, &c.IsObserved, &c.VoteType, &c.CitizenID, &c.CircuitID)
+
+	if errors.Is(sql.ErrNoRows, err) {
+		return nil, err
+	}
+	return &c, nil
+}
 
 func (r *circuitMySQLRepo) GetVotesByParty(circuitID int) ([]models.PartyVote, error) {
 	query := `
@@ -185,6 +198,17 @@ func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, 
 	}
 
 	return &circuit, nil
+}
+
+func (r *circuitMySQLRepo) AddVotePerson(vote models.PersonVoteModel) (*models.PersonVoteModel, error) {
+	query := "INSERT INTO PERSON_VOTES (vote_date, is_observed, vote_type, citizen_id, circuit_id) VALUES (?, ?, ?, ? , ?)"
+
+	_, err := r.db.Exec(query, vote.VoteDate, vote.IsObserved, vote.VoteType, vote.CitizenID, vote.CircuitID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &vote, nil
 }
 
 func (r *circuitMySQLRepo) Update(circuit models.Circuit) (*models.Circuit, error) {

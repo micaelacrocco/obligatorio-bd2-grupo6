@@ -17,7 +17,7 @@ func NewListVoteRepository(db *sql.DB) interfaces.ListVoteRepository {
 }
 
 func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
-	rows, err := r.db.Query("SELECT id, vote_date, list_number FROM LIST_VOTES")
+	rows, err := r.db.Query("SELECT id, vote_date, list_number, circuit_id FROM LIST_VOTES")
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
 		var v models.ListVote
 		var voteDateStr string
 
-		if err := rows.Scan(&v.ID, &voteDateStr, &v.ListNumber); err != nil {
+		if err := rows.Scan(&v.ID, &voteDateStr, &v.ListNumber, &v.CircuitID); err != nil {
 			return nil, err
 		}
 
@@ -42,7 +42,7 @@ func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) 
 	// Convert time.Time to string before insert
 	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
-	_, err := r.db.Exec("INSERT INTO LIST_VOTES(vote_date, list_number) VALUES (?, ?)", voteDateStr, vote.ListNumber)
+	_, err := r.db.Exec("INSERT INTO LIST_VOTES(vote_date, list_number, circuit_id) VALUES (?, ?, ?)", voteDateStr, vote.ListNumber, vote.CircuitID)
 	err = utils.ForeignKeyNotFoundError(err)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) 
 func (r *listVoteMySQLRepo) Update(vote models.ListVote) (*models.ListVote, error) {
 	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
-	result, err := r.db.Exec("UPDATE LIST_VOTES SET vote_date = ?, list_number = ? WHERE id = ?", voteDateStr, vote.ListNumber, vote.ID)
+	result, err := r.db.Exec("UPDATE LIST_VOTES SET vote_date = ?, list_number = ?, circuit_id = ? WHERE id = ?", voteDateStr, vote.ListNumber, vote.ID, vote.CircuitID)
 	if err != nil {
 		return nil, err
 	}
