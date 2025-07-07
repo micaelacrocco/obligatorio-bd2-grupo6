@@ -26,6 +26,7 @@ func (u *listVoteUseCase) GetAll() ([]dtos.ListVoteDto, error) {
 			ID:         v.ID,
 			VoteDate:   v.VoteDate.Format("2006-01-02"),
 			ListNumber: v.ListNumber,
+			CircuitID:  v.CircuitID,
 		})
 	}
 	return result, nil
@@ -36,6 +37,7 @@ func (u *listVoteUseCase) Add(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
 	model := models.ListVote{
 		VoteDate:   date,
 		ListNumber: dto.ListNumber,
+		CircuitID:  dto.CircuitID,
 	}
 	added, err := u.r.Add(model)
 	if err != nil {
@@ -51,6 +53,7 @@ func (u *listVoteUseCase) Update(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error
 		ID:         dto.ID,
 		VoteDate:   date,
 		ListNumber: dto.ListNumber,
+		CircuitID:  dto.CircuitID,
 	}
 	_, err := u.r.Update(model)
 	if err != nil {
