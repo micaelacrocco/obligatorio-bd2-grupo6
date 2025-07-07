@@ -114,6 +114,41 @@ func (c *circuitsUseCase) GetVotes(circuitID int) ([]dtos.CircuitResultDto, erro
 	return voteDto, nil
 }
 
+func (c *circuitsUseCase) GetVotesByAllCandidates(circuitID int) ([]dtos.CircuitResultByAllCandidates, error) {
+	votes, err := c.r.GetVotesByAllCandidates(circuitID)
+	if err != nil {
+		return nil, err
+	}
+
+	totalVotes := 0
+	for _, v := range votes {
+		totalVotes += v.VoteCount
+	}
+
+	var voteDto []dtos.CircuitResultByAllCandidates
+	for _, v := range votes {
+		percentage := 0.0
+		if totalVotes > 0 {
+			percentage = float64(v.VoteCount) / float64(totalVotes) * 100
+		}
+
+		partyName := v.Party
+		if v.Party == "" {
+			// Si no hay número de lista, es un voto especial
+			partyName = v.Party // Puede ser "En Blanco", "Anulado", etc.
+		}
+
+		voteDto = append(voteDto, dtos.CircuitResultByAllCandidates{
+			Party:      partyName,
+			Candidate:  v.Candidate,
+			VoteCount:  v.VoteCount,
+			Percentage: percentage,
+		})
+	}
+
+	return voteDto, nil
+}
+
 func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto, error) {
 	circuitResult, err := c.r.AddCircuit(models.Circuit(circuit))
 	if err != nil {

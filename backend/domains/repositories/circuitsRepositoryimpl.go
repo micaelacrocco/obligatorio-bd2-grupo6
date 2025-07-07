@@ -127,6 +127,54 @@ SELECT * FROM OtherVotes;
 	return results, nil
 }
 
+func (r *circuitMySQLRepo) GetVotesByAllCandidates(circuitID int) ([]models.CircuitResultByAllCandidates, error) {
+	query := `
+	WITH ListVotes AS (
+    SELECT
+        p.name AS party,
+        CONCAT(c.first_name, ' ', c.last_name) AS candidate,
+        COUNT(*) AS vote_count
+    FROM LIST_VOTES lv
+             JOIN PARTY_LISTS pl ON lv.list_number = pl.list_number
+             JOIN PARTIES p ON pl.party_id = p.id
+             LEFT JOIN LEADERS l ON p.id = l.party_id AND l.election_year = 2025
+             LEFT JOIN CITIZENS c ON l.citizen_id = c.id
+    WHERE lv.circuit_id = 300
+    GROUP BY p.name, c.first_name, c.last_name
+),
+     OtherVotes AS (
+         SELECT
+             vote_type AS party,
+             vote_type AS candidate,
+             COUNT(*) AS vote_count
+         FROM PERSON_VOTES
+         WHERE circuit_id = ? AND vote_type IN ('En Blanco', 'Anulado')
+         GROUP BY vote_type
+     )
+
+SELECT * FROM ListVotes
+UNION ALL
+SELECT * FROM OtherVotes
+	;
+
+	`
+
+	rows, err := r.db.Query(query, circuitID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []models.CircuitResultByAllCandidates
+	for rows.Next() {
+		var vote models.CircuitResultByAllCandidates
+		if err := rows.Scan(&vote.Party, &vote.Candidate, &vote.VoteCount); err != nil {
+			return nil, err
+		}
+		results = append(results, vote)
+	}
+	return results, nil
+}
 func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, error) {
 	query := "INSERT INTO CIRCUITS(id, location, is_accessible, credential_start, credential_end, polling_place_id) VALUES(?, ?, ?, ?, ?, ?)"
 	_, err := r.db.Exec(query, circuit.ID, circuit.Location, circuit.Accessible, circuit.CredentialStart, circuit.CredentialEnd, circuit.PollingPlaceId)
