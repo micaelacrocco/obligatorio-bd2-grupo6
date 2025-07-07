@@ -4,7 +4,6 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
 	"EleccionesUcu/models"
-	"time"
 )
 
 type citizenUseCase struct {
@@ -27,7 +26,7 @@ func (c *citizenUseCase) GetAll() ([]dtos.CitizenDto, error) {
 			ID:         citizen.ID,
 			FirstName:  citizen.FirstName,
 			LastName:   citizen.LastName,
-			BirthDate:  citizen.BirthDate.Format(time.RFC3339),
+			BirthDate:  citizen.BirthDate,
 			Credential: citizen.Credential,
 		})
 	}
@@ -45,21 +44,17 @@ func (c *citizenUseCase) GetByID(id int) (dtos.CitizenDto, error) {
 		ID:         citizen.ID,
 		FirstName:  citizen.FirstName,
 		LastName:   citizen.LastName,
-		BirthDate:  citizen.BirthDate.Format(time.RFC3339),
+		BirthDate:  citizen.BirthDate,
 		Credential: citizen.Credential,
 	}, nil
 }
 
 func (c *citizenUseCase) AddCitizen(dto dtos.CitizenDto) (dtos.CitizenDto, error) {
-	birthDate, err := time.Parse(time.RFC3339, dto.BirthDate)
-	if err != nil {
-		return dtos.CitizenDto{}, err
-	}
 
 	citizen := models.Citizen{
 		FirstName:  dto.FirstName,
 		LastName:   dto.LastName,
-		BirthDate:  birthDate,
+		BirthDate:  dto.BirthDate,
 		Credential: dto.Credential,
 	}
 
@@ -72,15 +67,11 @@ func (c *citizenUseCase) AddCitizen(dto dtos.CitizenDto) (dtos.CitizenDto, error
 }
 
 func (c *citizenUseCase) Update(id int, dto dtos.CitizenDto) error {
-	birthDate, err := time.Parse(time.RFC3339, dto.BirthDate)
-	if err != nil {
-		return err
-	}
 
 	citizen := models.Citizen{
 		FirstName:  dto.FirstName,
 		LastName:   dto.LastName,
-		BirthDate:  birthDate,
+		BirthDate:  dto.BirthDate,
 		Credential: dto.Credential,
 	}
 
