@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"EleccionesUcu/dtos"
 	"EleccionesUcu/domains/interfaces"
+	"EleccionesUcu/dtos"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
