@@ -94,8 +94,8 @@ func main() {
 	protectedAdmin.GET("/circuits/:id/votes-by-party", circuitsHandler.GetVotesByParty)
 	protectedAdmin.GET("/circuits/:id/results", circuitsHandler.GetVotes)
 	protectedAdmin.GET("/circuits/:id/candidates/results", circuitsHandler.GetVotesByAllCandidates)
-
-	//protectedAdmin.GET("/political-parties", politicalPartyHandler.GetAll)
+	protectedAdmin.POST("circuits/person-vote", circuitsHandler.AddPersonVote)
+	protectedAdmin.GET("/political-parties", politicalPartyHandler.GetAll)
 	protectedAdmin.POST("/political-parties", politicalPartyHandler.Add)
 	protectedAdmin.PUT("/political-parties", politicalPartyHandler.Update)
 	protectedAdmin.DELETE("/political-parties/:id", politicalPartyHandler.Delete)

@@ -52,6 +52,25 @@ func (c *circuitsUseCase) GetById(id int) (*dtos.CircuitDto, error) {
 	}
 	return &circuitDto, nil
 }
+
+func (c *circuitsUseCase) GetVotesPersonById(citizenID int) (*dtos.PersonVoteDTO, error) {
+	personVote, err := c.r.GetVotesPersonById(citizenID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	personVoteDTO := dtos.PersonVoteDTO{
+		ID:         personVote.ID,
+		VoteDate:   personVote.VoteDate,
+		IsObserved: personVote.IsObserved,
+		VoteType:   personVote.VoteType,
+		CitizenID:  personVote.CitizenID,
+		CircuitID:  personVote.CircuitID,
+	}
+	return &personVoteDTO, nil
+}
+
 func (c *circuitsUseCase) GetVotesByParty(circuitID int) ([]dtos.PartyVoteDto, error) {
 	votes, err := c.r.GetVotesByParty(circuitID)
 	if err != nil {
@@ -182,6 +201,23 @@ func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto,
 	return &circuitDto, nil
 }
 
+func (c *circuitsUseCase) AddVotePerson(vote dtos.PersonVoteDTO) (*dtos.PersonVoteDTO, error) {
+	personVoteResult, err := c.r.AddVotePerson(models.PersonVoteModel(vote))
+
+	if err != nil {
+		return nil, err
+	}
+
+	personVoteDto := dtos.PersonVoteDTO{
+		ID:        personVoteResult.ID,
+		VoteDate:  personVoteResult.VoteDate,
+		VoteType:  personVoteResult.VoteType,
+		CitizenID: personVoteResult.CitizenID,
+		CircuitID: personVoteResult.CircuitID,
+	}
+
+	return &personVoteDto, nil
+}
 func (c *circuitsUseCase) Update(dto dtos.CircuitDto) (*dtos.CircuitDto, error) {
 	updated, err := c.r.Update(models.Circuit(dto))
 	if err != nil {
