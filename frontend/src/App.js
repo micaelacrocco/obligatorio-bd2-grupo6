@@ -49,7 +49,7 @@ function App() {
           }
         />
         <Route
-          path="/election-results"
+          path="/election-result"
           element={
             <ProtectedRoute>
               <ElectionResult />

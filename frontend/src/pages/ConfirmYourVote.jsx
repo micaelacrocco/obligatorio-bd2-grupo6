@@ -5,7 +5,8 @@ import {
     Button,
     Typography,
     styled,
-    GlobalStyles
+    GlobalStyles,
+    TextField 
 } from "@mui/material";
 import {
     Info as InfoIcon,
@@ -111,38 +112,16 @@ const StyledButton = styled(Button)({
 const ConfirmYourVote = () => {
     const navigate = useNavigate();
     const [voteData, setVoteData] = useState(null);
-    const [circuit, setCircuit] = useState(null);
-    const [loadingCircuit, setLoadingCircuit] = useState(true);
+    const [circuitNumber, setCircuitNumber] = useState(""); 
 
     useEffect(() => {
         const storedVote = localStorage.getItem("voteData");
         if (storedVote) {
             setVoteData(JSON.parse(storedVote));
         }
-
-        const token = localStorage.getItem("token");
-        fetch("http://localhost:8080/my-circuit", {
-            headers: {
-                ...(token && { Authorization: `Bearer ${token}` }),
-            },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("Error al obtener circuito");
-                return res.json();
-            })
-            .then((data) => {
-                setCircuit(data);
-                setLoadingCircuit(false);
-            })
-            .catch((err) => {
-                console.error(err);
-                setLoadingCircuit(false);
-            });
     }, []);
 
     if (!voteData) return <p>No hay voto para mostrar.</p>;
-
-    if (loadingCircuit) return <p>Cargando información del circuito...</p>;
 
     const selectedListNumber = voteData.listasSeleccionadas.length > 0
         ? voteData.listasSeleccionadas[0]
@@ -161,7 +140,11 @@ const ConfirmYourVote = () => {
             return;
         }
 
-        const circuitId = circuit?.id || 1;
+        const circuitId = parseInt(circuitNumber); 
+        if (isNaN(circuitId)) {
+            alert("Por favor ingrese un número de circuito válido.");
+            return;
+        }
 
         const payload = {
             vote_date: new Date().toISOString().split("T")[0],
@@ -276,6 +259,19 @@ const ConfirmYourVote = () => {
                                 </InfoItem>
                             </>
                         )}
+
+                        {/* 🔧 NUEVO: Campo para número de circuito */}
+                        <InfoItem sx={{ flexDirection: "column", alignItems: "start", mt: 2 }}>
+                            <Typography fontWeight="bold">Número de circuito:</Typography>
+                            <TextField
+                                variant="outlined"
+                                size="small"
+                                value={circuitNumber}
+                                onChange={(e) => setCircuitNumber(e.target.value)}
+                                placeholder="Ej. 101"
+                                sx={{ mt: 1, width: '200px' }}
+                            />
+                        </InfoItem>
                     </InfoSection>
 
                     <ButtonContainer>
