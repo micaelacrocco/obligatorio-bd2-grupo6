@@ -67,6 +67,28 @@ func (h *CircuitsHandler) GetVotesByParty(c *gin.Context) {
 	c.JSON(http.StatusOK, votes)
 }
 
+func (h *CircuitsHandler) GetVotes(c *gin.Context) {
+	circuitID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid circuit ID"})
+		return
+	}
+
+	votes, err := h.u.GetVotes(circuitID)
+
+	if len(votes) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "this circuit doesnt have votes"})
+		return
+	}
+	if err != nil {
+		log.Printf("error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch vote data"})
+		return
+	}
+
+	c.JSON(http.StatusOK, votes)
+}
+
 func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
 	var circuit dtos.CircuitDto
 
