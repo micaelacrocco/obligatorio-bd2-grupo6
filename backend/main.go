@@ -6,75 +6,83 @@ import (
 	"EleccionesUcu/domains/usecases"
 	"EleccionesUcu/handlers"
 	"EleccionesUcu/middlewares"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func main() {
 	r := gin.Default()
+
+	// === CORS Middleware ===
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	database := db.ConnectDb()
 	defer database.Close()
 
+	// Repositorios
 	citizenRepo := repositories.NewCitizenRepository(database)
-	citizenUseCase := usecases.NewCitizenUseCase(citizenRepo)
-	citizenHandler := handlers.NewCitizenHandler(citizenUseCase)
-
-	// userRepo := repositories.NewUserRepository(database)
-	// authUseCase :∑= usecases.NewAuthUseCase(userRepo, citizenRepo)
-	// authHandler := handlers.NewAuthHandler(authUseCase)
-
+	userRepo := repositories.NewUserRepository(database)
 	circuitsRepo := repositories.NewCircuitRepository(database)
-	circuitsUseCase := usecases.NewCircuitsUseCase(circuitsRepo)
-	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
-
 	politicalPartyRepo := repositories.NewPoliticalPartyRepository(database)
-	politicalPartyUseCase := usecases.NewPoliticalPartyUseCase(politicalPartyRepo)
-	politicalPartyHandler := handlers.NewPoliticalPartyHandler(politicalPartyUseCase)
-
 	partyListRepository := repositories.NewPartyListRepository(database)
-	partyListUseCase := usecases.NewPartyListUseCase(partyListRepository)
-	partyListHandler := handlers.NewPartyListHandler(partyListUseCase)
-
 	listVoteRepository := repositories.NewListVoteRepository(database)
-	listVoteUseCase := usecases.NewListVoteUseCase(listVoteRepository)
-	listVoteHandler := handlers.NewListVoteHandler(listVoteUseCase)
-
 	departmentRepository := repositories.NewDepartmentRepository(database)
-	departmentUseCase := usecases.NewDepartmentUseCase(departmentRepository)
-	departmentHandler := handlers.NewDepartmentHandler(departmentUseCase)
-
 	zoneRepository := repositories.NewZoneRepository(database)
-	zoneUseCase := usecases.NewZoneUseCase(zoneRepository)
-	zoneHandler := handlers.NewZoneHandler(zoneUseCase)
-
 	policeAgentRepository := repositories.NewPoliceAgentRepository(database)
-	policeAgentUseCase := usecases.NewPoliceAgentUseCase(policeAgentRepository)
-	policeAgentHandler := handlers.NewPoliceAgentHandler(policeAgentUseCase)
-
 	policeStationRepository := repositories.NewPoliceStationRepository(database)
-	policeStationUseCase := usecases.NewPoliceStationUseCase(policeStationRepository)
-	policeStationHandler := handlers.NewPoliceStationHandler(policeStationUseCase)
-
 	tableRepository := repositories.NewTableRepository(database)
-	tableUseCase := usecases.NewTableUseCase(tableRepository)
-	tableHandler := handlers.NewTableHandler(tableUseCase)
-
 	candidateRepository := repositories.NewCandidateRepository(database)
-	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
-	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
-
 	pollingPlaceRepository := repositories.NewPollingPlaceRepository(database)
-	pollingPlaceUseCase := usecases.NewPollingPlaceUseCase(pollingPlaceRepository)
-	pollingPlaceHandler := handlers.NewPollingPlaceHandler(pollingPlaceUseCase)
-
 	tableMembersRepository := repositories.NewTableMemberRepository(database)
+
+	// UseCases
+	citizenUseCase := usecases.NewCitizenUseCase(citizenRepo)
+	userUseCase := usecases.NewUserUseCase(userRepo)
+	circuitsUseCase := usecases.NewCircuitsUseCase(circuitsRepo)
+	politicalPartyUseCase := usecases.NewPoliticalPartyUseCase(politicalPartyRepo)
+	partyListUseCase := usecases.NewPartyListUseCase(partyListRepository)
+	listVoteUseCase := usecases.NewListVoteUseCase(listVoteRepository)
+	departmentUseCase := usecases.NewDepartmentUseCase(departmentRepository)
+	zoneUseCase := usecases.NewZoneUseCase(zoneRepository)
+	policeAgentUseCase := usecases.NewPoliceAgentUseCase(policeAgentRepository)
+	policeStationUseCase := usecases.NewPoliceStationUseCase(policeStationRepository)
+	tableUseCase := usecases.NewTableUseCase(tableRepository)
+	candidateUseCase := usecases.NewCandidateUseCase(candidateRepository)
+	pollingPlaceUseCase := usecases.NewPollingPlaceUseCase(pollingPlaceRepository)
 	tableMembersUseCase := usecases.NewTableMemberUseCase(tableMembersRepository)
+
+	// Handlers
+	citizenHandler := handlers.NewCitizenHandler(citizenUseCase)
+	loginHandler := handlers.NewLoginHandler(citizenUseCase, userUseCase)
+	circuitsHandler := handlers.NewCircuitsHandler(circuitsUseCase)
+	politicalPartyHandler := handlers.NewPoliticalPartyHandler(politicalPartyUseCase)
+	partyListHandler := handlers.NewPartyListHandler(partyListUseCase)
+	listVoteHandler := handlers.NewListVoteHandler(listVoteUseCase)
+	departmentHandler := handlers.NewDepartmentHandler(departmentUseCase)
+	zoneHandler := handlers.NewZoneHandler(zoneUseCase)
+	policeAgentHandler := handlers.NewPoliceAgentHandler(policeAgentUseCase)
+	policeStationHandler := handlers.NewPoliceStationHandler(policeStationUseCase)
+	tableHandler := handlers.NewTableHandler(tableUseCase)
+	candidateHandler := handlers.NewCandidateHandler(candidateUseCase)
+	pollingPlaceHandler := handlers.NewPollingPlaceHandler(pollingPlaceUseCase)
 	tableMemberHandler := handlers.NewTableMemberHandler(tableMembersUseCase)
 
-	loginHandler := handlers.NewLoginHandler(citizenUseCase, circuitsUseCase)
+	// Rutas públicas
+	r.POST("/auth/login", loginHandler.Login)
+	r.GET("/citizens/:id", citizenHandler.GetById)
+	r.GET("/party-lists", partyListHandler.GetAll)
+	r.GET("/political-parties", politicalPartyHandler.GetAll)
+	r.GET("/my-circuit", circuitsHandler.GetMyCircuit)
 
-	r.POST("/login", loginHandler.Login)
-
-	// Protected admin routes
+	// Rutas protegidas con middleware de autenticación
 	protectedAdmin := r.Group("/")
 	protectedAdmin.Use(middlewares.AuthMiddleware())
 
@@ -87,12 +95,12 @@ func main() {
 	protectedAdmin.GET("/circuits/:id/results", circuitsHandler.GetVotes)
 	protectedAdmin.GET("/circuits/:id/candidates/results", circuitsHandler.GetVotesByAllCandidates)
 
-	protectedAdmin.GET("/political-parties", politicalPartyHandler.GetAll)
+	//protectedAdmin.GET("/political-parties", politicalPartyHandler.GetAll)
 	protectedAdmin.POST("/political-parties", politicalPartyHandler.Add)
 	protectedAdmin.PUT("/political-parties", politicalPartyHandler.Update)
 	protectedAdmin.DELETE("/political-parties/:id", politicalPartyHandler.Delete)
 
-	protectedAdmin.GET("/party-lists", partyListHandler.GetAll)
+	//protectedAdmin.GET("/party-lists", partyListHandler.GetAll)
 	protectedAdmin.POST("/party-lists", partyListHandler.Add)
 	protectedAdmin.PUT("/party-lists", partyListHandler.Update)
 	protectedAdmin.DELETE("/party-lists/:list_number", partyListHandler.Delete)
@@ -143,10 +151,10 @@ func main() {
 	protectedAdmin.DELETE("/table-members/:citizen_id/:table_id", tableMemberHandler.Delete)
 
 	protectedAdmin.GET("/citizens", citizenHandler.GetAll)
-	protectedAdmin.GET("/citizens/:ci", citizenHandler.GetById)
+	//protectedAdmin.GET("/citizens/:ci", citizenHandler.GetById)
 	protectedAdmin.POST("/citizens", citizenHandler.AddCitizen)
 	protectedAdmin.PUT("/citizens/:id", citizenHandler.Update)
 	protectedAdmin.DELETE("/citizens/:id", citizenHandler.Delete)
 
-	r.Run("localhost:8080")
+	r.Run(":8080") // escucha en el puerto 8080 en todas las interfaces
 }

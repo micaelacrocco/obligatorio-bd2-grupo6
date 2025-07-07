@@ -6,6 +6,7 @@ import (
 	"EleccionesUcu/utils"
 	"database/sql"
 	"errors"
+	"strconv"
 )
 
 type circuitMySQLRepo struct {
@@ -175,6 +176,41 @@ SELECT * FROM OtherVotes
 	}
 	return results, nil
 }
+
+func (r *circuitMySQLRepo) GetCircuitByCitizenId(citizenId int) (*models.Circuit, error) {
+	// Primero obtenemos el credential del ciudadano
+	var credential string
+	err := r.db.QueryRow("SELECT credential FROM CITIZENS WHERE id = ?", citizenId).Scan(&credential)
+	if err != nil {
+		return nil, err
+	}
+
+	// Sacamos los 3 primeros caracteres y convertimos a int
+	if len(credential) < 4 {
+		return nil, errors.New("credential too short")
+	}
+	numericPart := credential[3:] // desde el 4to caracter (index 3)
+	credInt, err := strconv.Atoi(numericPart)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ahora buscamos el circuito cuyo rango incluya ese número
+	query := `
+	SELECT id, location, is_accessible, credential_start, credential_end, polling_place_id
+	FROM CIRCUITS
+	WHERE ? BETWEEN credential_start AND credential_end
+	LIMIT 1;
+	`
+	row := r.db.QueryRow(query, credInt)
+	var c models.Circuit
+	err = row.Scan(&c.ID, &c.Location, &c.Accessible, &c.CredentialStart, &c.CredentialEnd, &c.PollingPlaceId)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
 func (r *circuitMySQLRepo) AddCircuit(circuit models.Circuit) (*models.Circuit, error) {
 	query := "INSERT INTO CIRCUITS(id, location, is_accessible, credential_start, credential_end, polling_place_id) VALUES(?, ?, ?, ?, ?, ?)"
 	_, err := r.db.Exec(query, circuit.ID, circuit.Location, circuit.Accessible, circuit.CredentialStart, circuit.CredentialEnd, circuit.PollingPlaceId)

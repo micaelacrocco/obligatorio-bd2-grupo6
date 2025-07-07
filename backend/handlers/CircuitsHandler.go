@@ -111,6 +111,35 @@ func (h *CircuitsHandler) GetVotesByAllCandidates(c *gin.Context) {
 	c.JSON(http.StatusOK, votes)
 }
 
+func (h *CircuitsHandler) GetMyCircuit(c *gin.Context) {
+	claimsRaw, exists := c.Get("claims")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+		return
+	}
+
+	claims, ok := claimsRaw.(map[string]interface{})
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+		return
+	}
+
+	citizenIDFloat, ok := claims["citizen_id"].(float64)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontró el citizen_id en el token"})
+		return
+	}
+	citizenID := int(citizenIDFloat)
+
+	circuit, err := h.u.GetMyCircuitByCitizenId(citizenID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No se encontró circuito para este ciudadano"})
+		return
+	}
+
+	c.JSON(http.StatusOK, circuit)
+}
+
 func (h *CircuitsHandler) AddCircuit(c *gin.Context) {
 	var circuit dtos.CircuitDto
 
