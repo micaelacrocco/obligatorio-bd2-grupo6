@@ -1,10 +1,8 @@
 package models
 
-import "time"
-
 type ListVote struct {
 	ID         int
-	VoteDate   time.Time
+	VoteDate   string
 	ListNumber int
 	CircuitID  int
 }
