@@ -5,7 +5,6 @@ import (
 	"EleccionesUcu/models"
 	"EleccionesUcu/utils"
 	"database/sql"
-	"time"
 )
 
 type listVoteMySQLRepo struct {
@@ -26,13 +25,11 @@ func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
 	var votes []models.ListVote
 	for rows.Next() {
 		var v models.ListVote
-		var voteDateStr string
 
-		if err := rows.Scan(&v.ID, &voteDateStr, &v.ListNumber, &v.CircuitID); err != nil {
+		if err := rows.Scan(&v.ID, &v.VoteDate, &v.ListNumber, &v.CircuitID); err != nil {
 			return nil, err
 		}
 
-		v.VoteDate, _ = time.Parse("2006-01-02", voteDateStr)
 		votes = append(votes, v)
 	}
 	return votes, nil
@@ -40,9 +37,8 @@ func (r *listVoteMySQLRepo) GetAll() ([]models.ListVote, error) {
 
 func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) {
 	// Convert time.Time to string before insert
-	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
-	_, err := r.db.Exec("INSERT INTO LIST_VOTES(vote_date, list_number, circuit_id) VALUES (?, ?, ?)", voteDateStr, vote.ListNumber, vote.CircuitID)
+	_, err := r.db.Exec("INSERT INTO LIST_VOTES(vote_date, list_number, circuit_id) VALUES (?, ?, ?)", vote.VoteDate, vote.ListNumber, vote.CircuitID)
 	err = utils.ForeignKeyNotFoundError(err)
 	if err != nil {
 		return nil, err
@@ -51,9 +47,8 @@ func (r *listVoteMySQLRepo) Add(vote models.ListVote) (*models.ListVote, error) 
 }
 
 func (r *listVoteMySQLRepo) Update(vote models.ListVote) (*models.ListVote, error) {
-	voteDateStr := vote.VoteDate.Format("2006-01-02")
 
-	result, err := r.db.Exec("UPDATE LIST_VOTES SET vote_date = ?, list_number = ?, circuit_id = ? WHERE id = ?", voteDateStr, vote.ListNumber, vote.ID, vote.CircuitID)
+	result, err := r.db.Exec("UPDATE LIST_VOTES SET vote_date = ?, list_number = ?, circuit_id = ? WHERE id = ?", vote.VoteDate, vote.ListNumber, vote.ID, vote.CircuitID)
 	if err != nil {
 		return nil, err
 	}

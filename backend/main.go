@@ -79,8 +79,6 @@ func main() {
 	r.POST("/auth/login", loginHandler.Login)
 	r.GET("/citizens/:id", citizenHandler.GetById)
 	r.GET("/party-lists", partyListHandler.GetAll)
-	r.GET("/political-parties", politicalPartyHandler.GetAll)
-	r.GET("/my-circuit", circuitsHandler.GetMyCircuit)
 
 	// Rutas protegidas con middleware de autenticación
 	protectedAdmin := r.Group("/")

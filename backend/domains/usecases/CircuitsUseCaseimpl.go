@@ -168,22 +168,6 @@ func (c *circuitsUseCase) GetVotesByAllCandidates(circuitID int) ([]dtos.Circuit
 	return voteDto, nil
 }
 
-func (c *circuitsUseCase) GetMyCircuitByCitizenId(citizenId int) (*dtos.CircuitDto, error) {
-	circuit, err := c.r.GetCircuitByCitizenId(citizenId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &dtos.CircuitDto{
-		ID:              circuit.ID,
-		Location:        circuit.Location,
-		Accessible:      circuit.Accessible,
-		CredentialStart: circuit.CredentialStart,
-		CredentialEnd:   circuit.CredentialEnd,
-		PollingPlaceId:  circuit.PollingPlaceId,
-	}, nil
-}
-
 func (c *circuitsUseCase) AddCircuit(circuit dtos.CircuitDto) (*dtos.CircuitDto, error) {
 	circuitResult, err := c.r.AddCircuit(models.Circuit(circuit))
 	if err != nil {

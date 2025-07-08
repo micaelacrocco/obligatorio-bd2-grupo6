@@ -4,7 +4,6 @@ import (
 	"EleccionesUcu/domains/interfaces"
 	"EleccionesUcu/dtos"
 	"EleccionesUcu/models"
-	"time"
 )
 
 type listVoteUseCase struct {
@@ -24,7 +23,7 @@ func (u *listVoteUseCase) GetAll() ([]dtos.ListVoteDto, error) {
 	for _, v := range votes {
 		result = append(result, dtos.ListVoteDto{
 			ID:         v.ID,
-			VoteDate:   v.VoteDate.Format("2006-01-02"),
+			VoteDate:   v.VoteDate,
 			ListNumber: v.ListNumber,
 			CircuitID:  v.CircuitID,
 		})
@@ -33,9 +32,8 @@ func (u *listVoteUseCase) GetAll() ([]dtos.ListVoteDto, error) {
 }
 
 func (u *listVoteUseCase) Add(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
-	date, _ := time.Parse("2006-01-02", dto.VoteDate)
 	model := models.ListVote{
-		VoteDate:   date,
+		VoteDate:   dto.VoteDate,
 		ListNumber: dto.ListNumber,
 		CircuitID:  dto.CircuitID,
 	}
@@ -48,10 +46,9 @@ func (u *listVoteUseCase) Add(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
 }
 
 func (u *listVoteUseCase) Update(dto dtos.ListVoteDto) (*dtos.ListVoteDto, error) {
-	date, _ := time.Parse("2006-01-02", dto.VoteDate)
 	model := models.ListVote{
 		ID:         dto.ID,
-		VoteDate:   date,
+		VoteDate:   dto.VoteDate,
 		ListNumber: dto.ListNumber,
 		CircuitID:  dto.CircuitID,
 	}
